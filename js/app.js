@@ -42,7 +42,8 @@ function guardarCitasEnStorage(citas) {
 // --- RENDER PARA LA TABLA DE CITAS ---
 
 function renderizarTabla(listaCitas = null) {
-  const citas = listaCitas ? listaCitas : obtenerCitas();
+  // Si listaCitas es un array, lo usamos. Si no (es null o un evento), leemos del Storage.
+  const citas = Array.isArray(listaCitas) ? listaCitas : obtenerCitas();
   const tbody = document.getElementById("tablaCuerpo");
   const contador = document.getElementById("contadorCitas");
 
@@ -56,7 +57,7 @@ function renderizarTabla(listaCitas = null) {
   if (citas.length === 0) {
     tbody.innerHTML = `
             <tr>
-                <td colspan="6" class="text-center py-5 text-muted">
+                <td colspan="7" class="text-center py-5 text-muted">
                     <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                     <em>No hay citas programadas (dato vacío)</em>
                 </td>
@@ -72,7 +73,7 @@ function renderizarTabla(listaCitas = null) {
     const numeroOrden = index + 1;
 
     fila.innerHTML = `
-            <td class="fw-bold text-secondary">${numeroOrden}</td>
+            <td class="fw-bold text-center text-secondary">${numeroOrden}</td>
             <td>
                 <div class="fw-bold">${cita.fecha}</div>
                 <div class="small text-muted"><i class="bi bi-stopwatch"></i> ${cita.hora}</div>
@@ -88,10 +89,10 @@ function renderizarTabla(listaCitas = null) {
             </td>
             <td><small class="text-truncate d-inline-block" style="max-width: 150px;">${cita.observaciones}</small></td>
             <td class="text-end">
-                <button class="btn btn-sm btn-primary me-1" onclick="cargarCita(${cita.id})" title="Editar">
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="cargarCita(${cita.id})" title="Editar">
                     <i class="bi bi-pencil-square"></i>
                 </button>
-                <button class="btn btn-sm btn-secondary" onclick="eliminarCita(${cita.id})" title="Borrar">
+                <button class="btn btn-sm btn-outline-danger" onclick="eliminarCita(${cita.id})" title="Borrar">
                     <i class="bi bi-trash3-fill"></i>
                 </button>
             </td>
@@ -101,7 +102,7 @@ function renderizarTabla(listaCitas = null) {
 }
 
 // Al cargar el DOM: Renderiza la tabla
-document.addEventListener("DOMContentLoaded", renderizarTabla);
+document.addEventListener("DOMContentLoaded", () => renderizarTabla());
 
 // --- UTILIDADES ---
 

@@ -124,6 +124,11 @@ body {
 .badge.bg-primary {
   background-color: var(--davante-blue) !important;
 }
+.col-orden {
+  width: 5%;
+  text-align: center;
+  color: var(--davante-blue);
+}
 .col-fecha {
   width: 15%;
   cursor: pointer; /* Indica que se puede hacer clic para ordenar */
