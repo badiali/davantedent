@@ -124,6 +124,25 @@ body {
 .badge.bg-primary {
   background-color: var(--davante-blue) !important;
 }
+.col-fecha {
+  width: 15%;
+  cursor: pointer; /* Indica que se puede hacer clic para ordenar */
+}
+.col-fecha:hover {
+  background-color: #e9ecef; /* Un pequeño efecto visual al pasar el ratón */
+}
+.col-paciente {
+  width: 25%;
+}
+.col-contacto {
+  width: 20%;
+}
+.col-observaciones {
+  width: 25%;
+}
+.col-acciones {
+  width: 15%;
+}
 
 /* --- 8. FOOTER --- */
 footer {
