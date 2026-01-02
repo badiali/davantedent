@@ -1,3 +1,4 @@
+/* --- 1. CONFIGURACIÓN --- */
 :root {
   /* Color Principal Davante (Azul Intenso) */
   --davante-blue: #0033a0;
@@ -12,4 +13,21 @@
   --bs-primary-rgb: 0, 51, 160;
   --bs-body-font-family: "Poppins", sans-serif;
   --bs-body-bg: var(--davante-bg);
+}
+
+/* --- 2. ESTILOS GENERALES --- */
+body {
+  color: var(--davante-text);
+}
+
+/* --- 3. CABECERA / NAVBAR --- */
+.navbar {
+  background-color: var(--davante-blue) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 1.5rem;
 }
