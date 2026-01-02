@@ -13,140 +13,137 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/styles.css" />
   </head>
-  <body class="bg-light d-flex flex-column min-vh-100">
+  <body class="d-flex flex-column min-vh-100">
     <header>
-      <nav
-        class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm"
-      >
+      <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
           <a class="navbar-brand d-flex align-items-center" href="#">
-            <i class="bi bi-heart-pulse-fill me-2 fs-4"></i>
-            <span class="fw-bold tracking-wide">DavanteDent</span>
+            <i class="bi bi-heart-pulse-fill me-2 fs-3"></i>
+            <span>DavanteDent</span>
           </a>
         </div>
       </nav>
     </header>
     <main class="container flex-grow-1">
-      <div class="row">
-        <div class="col-lg-4 mb-4">
-          <div class="card shadow border-0">
-            <div class="card-header bg-white text-primary border-bottom-0 pt-3">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="card h-100">
+            <div class="card-header border-bottom-0">
               <h5 class="mb-0">
-                <i class="bi bi-plus-circle-dotted me-2"></i>Gestión de Cita
+                <i class="bi bi-plus-circle me-2"></i>Nueva Cita
               </h5>
             </div>
             <div class="card-body">
-              <form id="formCitas">
+              <form id="formCitas" novalidate>
                 <input type="hidden" id="idCita" />
-
-                <h6 class="text-muted text-uppercase small fw-bold mb-3">
-                  <i class="bi bi-calendar-event me-1"></i> Datos Cita
-                </h6>
-                <div class="row mb-2">
-                  <div class="col-6">
-                    <label class="form-label small">Fecha</label>
-                    <input
-                      type="date"
-                      class="form-control"
-                      id="fecha"
-                      required
-                    />
+                <div class="mb-3">
+                  <h6 class="text-uppercase text-muted small fw-bold">
+                    Fecha y Hora
+                  </h6>
+                  <div class="row g-2">
+                    <div class="col-7">
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="fecha"
+                        required
+                      />
+                    </div>
+                    <div class="col-5">
+                      <input
+                        type="time"
+                        class="form-control"
+                        id="hora"
+                        required
+                      />
+                    </div>
                   </div>
-                  <div class="col-6">
-                    <label class="form-label small">Hora</label>
-                    <input
-                      type="time"
-                      class="form-control"
-                      id="hora"
-                      required
-                    />
-                  </div>
                 </div>
-
-                <h6 class="text-muted text-uppercase small fw-bold mb-3 mt-4">
-                  <i class="bi bi-person-vcard me-1"></i> Paciente
-                </h6>
-                <div class="mb-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="nombre"
-                    placeholder="Nombre"
-                    required
-                  />
-                </div>
-                <div class="mb-2">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="apellidos"
-                    placeholder="Apellidos"
-                    required
-                  />
-                </div>
-                <div class="row mb-2">
-                  <div class="col-6">
+                <div class="mb-3">
+                  <h6 class="text-uppercase text-muted small fw-bold mt-4">
+                    Datos del Paciente
+                  </h6>
+                  <div class="mb-2">
                     <input
                       type="text"
                       class="form-control"
-                      id="dni"
-                      placeholder="DNI"
+                      id="nombre"
+                      placeholder="Nombre"
                       required
                     />
                   </div>
-                  <div class="col-6">
+                  <div class="mb-2">
                     <input
-                      type="tel"
+                      type="text"
                       class="form-control"
-                      id="telefono"
-                      placeholder="Teléfono"
+                      id="apellidos"
+                      placeholder="Apellidos"
+                      required
+                    />
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="dni"
+                        placeholder="DNI"
+                        required
+                      />
+                    </div>
+                    <div class="col-6">
+                      <input
+                        type="tel"
+                        class="form-control"
+                        id="telefono"
+                        placeholder="Teléfono"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label for="fechaNacimiento" class="form-label small mb-1"
+                      >Fecha Nacimiento</label
+                    >
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="fechaNacimiento"
                       required
                     />
                   </div>
                 </div>
-                <div class="mb-3">
-                  <label class="form-label small">F. Nacimiento</label>
-                  <input
-                    type="date"
-                    class="form-control"
-                    id="fechaNacimiento"
-                    required
-                  />
-                </div>
-
-                <div class="mb-3">
+                <div class="mb-4">
                   <textarea
                     class="form-control"
                     id="observaciones"
-                    rows="2"
-                    placeholder="Observaciones..."
+                    rows="3"
+                    placeholder="Observaciones o motivo de la visita..."
                   ></textarea>
                 </div>
-
                 <div
                   id="mensajeError"
-                  class="alert alert-danger d-none d-flex align-items-center"
+                  class="alert alert-danger d-flex align-items-center d-none"
                   role="alert"
                 >
                   <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                  <span id="textoError"></span>
+                  <div id="textoError">Error en el formulario</div>
                 </div>
-
                 <div class="d-grid gap-2">
                   <button type="submit" class="btn btn-primary" id="btnGuardar">
                     <i class="bi bi-save me-2"></i>Guardar Cita
                   </button>
                   <button
                     type="button"
-                    class="btn btn-outline-secondary btn-sm"
+                    class="btn btn-outline-secondary"
                     onclick="#"
                   >
-                    <i class="bi bi-x-circle me-2"></i>Cancelar
+                    Cancelar
                   </button>
                 </div>
               </form>
@@ -154,27 +151,27 @@
           </div>
         </div>
         <div class="col-lg-8">
-          <div class="card shadow border-0">
+          <div class="card h-100">
             <div
-              class="card-header bg-white text-primary border-bottom-0 pt-3 d-flex justify-content-between align-items-center"
+              class="card-header border-bottom-0 d-flex justify-content-between align-items-center"
             >
               <h5 class="mb-0">
-                <i class="bi bi-list-check me-2"></i>Listado de Citas
+                <i class="bi bi-calendar-check me-2"></i>Agenda del Día
               </h5>
-              <span class="badge bg-primary rounded-pill" id="contadorCitas"
+              <span class="badge rounded-pill bg-primary" id="contadorCitas"
                 >0</span
               >
             </div>
             <div class="card-body p-0">
               <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                  <thead class="table-light">
+                <table class="table align-middle mb-0">
+                  <thead>
                     <tr>
-                      <th><i class="bi bi-clock"></i> Cuándo</th>
-                      <th>Paciente</th>
-                      <th>Teléfono</th>
-                      <th>Notas</th>
-                      <th class="text-end">Acciones</th>
+                      <th style="width: 15%">Hora</th>
+                      <th style="width: 25%">Paciente</th>
+                      <th style="width: 20%">Contacto</th>
+                      <th style="width: 25%">Observaciones</th>
+                      <th style="width: 15%" class="text-end">Acciones</th>
                     </tr>
                   </thead>
                   <tbody id="tablaCuerpo"></tbody>
@@ -185,15 +182,13 @@
         </div>
       </div>
     </main>
-    <footer
-      class="mt-auto py-3 bg-white border-top text-center text-muted small"
-    >
-      <div class="container">
-        <p class="mb-0">
-          <i class="bi bi-geo-alt-fill text-danger"></i> Calle Salud Dental 1,
-          Estepona (Málaga) &nbsp;|&nbsp;
-          <i class="bi bi-telephone-fill text-success"></i> 900 000 000
-          &nbsp;|&nbsp; © 2025 DavanteDent
+    <footer class="border-top py-4">
+      <div class="container text-center">
+        <p class="text-muted mb-0"><strong>DavanteDent</strong> &copy; 2025</p>
+        <p class="text-muted small mb-0">
+          <i class="bi bi-geo-alt-fill text-primary"></i> Calle Salud Dental 1,
+          Estepona &nbsp;&bull;&nbsp;
+          <i class="bi bi-telephone-fill text-primary"></i> 900 000 000
         </p>
       </div>
     </footer>
