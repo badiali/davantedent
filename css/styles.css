@@ -4,6 +4,10 @@
   --davante-blue: #0033a0;
   --davante-blue-hover: #002a80;
 
+  /* Color Secundario Davante (Naranja) */
+  --davante-orange: #ff6600;
+  --davante-orange-hover: #cc5200;
+
   /* Color Secundario (Gris/Negro suave para textos) */
   --davante-text: #333333;
   --davante-bg: #f4f6f9;
@@ -18,6 +22,9 @@
 /* --- 2. ESTILOS GENERALES --- */
 body {
   color: var(--davante-text);
+}
+.row > * {
+  margin-bottom: var(--bs-gutter-y);
 }
 
 /* --- 3. CABECERA / NAVBAR --- */
@@ -68,18 +75,26 @@ body {
 
 /* --- 6. BOTONES --- */
 .btn-primary {
-  background-color: var(--davante-blue);
-  border-color: var(--davante-blue);
-  padding: 0.6rem 1.2rem;
-  font-weight: 500;
-  border-radius: 8px;
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: var(--davante-blue);
+  --bs-btn-border-color: var(--davante-blue);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--davante-blue-hover);
+  --bs-btn-hover-border-color: var(--davante-blue-hover);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--davante-blue-hover);
+  --bs-btn-active-border-color: var(--davante-blue-hover);
 }
-.btn-primary:hover {
-  background-color: var(--davante-blue-hover);
-  border-color: var(--davante-blue-hover);
-}
-.btn-outline-secondary {
-  border-radius: 8px;
+.btn-secondary {
+  --bs-btn-color: #ffffff;
+  --bs-btn-bg: var(--davante-orange);
+  --bs-btn-border-color: var(--davante-orange);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--davante-orange-hover);
+  --bs-btn-hover-border-color: var(--davante-orange-hover);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--davante-orange-hover);
+  --bs-btn-active-border-color: var(--davante-orange-hover);
 }
 
 /* --- 7. TABLA DE CITAS --- */
