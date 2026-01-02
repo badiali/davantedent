@@ -92,5 +92,25 @@ function renderizarTabla() {
   });
 }
 
+// --- UTILIDADES ---
+
+function limpiarFormulario() {
+  // Resetear inputs nativos
+  document.getElementById("formCitas").reset();
+
+  // Limpiar ID oculto (volvemos a modo creación)
+  document.getElementById("idCita").value = "";
+
+  // Restaurar estado visual del botón guardar (Color Davante Blue)
+  const btn = document.getElementById("btnGuardar");
+  btn.innerHTML = '<i class="bi bi-save me-2"></i>Guardar Cita';
+  btn.classList.remove("btn-warning", "text-dark");
+  btn.classList.add("btn-primary");
+
+  // Ocultar alertas de error si las hubiera
+  const errorDiv = document.getElementById("mensajeError");
+  errorDiv.classList.add("d-none");
+}
+
 // Al cargar el DOM: Renderiza la tabla
 document.addEventListener("DOMContentLoaded", renderizarTabla);
