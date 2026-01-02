@@ -109,3 +109,16 @@ body {
 .badge.bg-primary {
   background-color: var(--davante-blue) !important;
 }
+
+/* --- 8. FOOTER --- */
+footer {
+  background-color: #ffffff !important;
+  margin-top: auto;
+}
+footer p {
+  font-size: 0.9rem;
+}
+footer i {
+  font-size: 1rem;
+  vertical-align: -1px;
+}
