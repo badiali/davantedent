@@ -1,0 +1,15 @@
+:root {
+  /* Color Principal Davante (Azul Intenso) */
+  --davante-blue: #0033a0;
+  --davante-blue-hover: #002a80;
+
+  /* Color Secundario (Gris/Negro suave para textos) */
+  --davante-text: #333333;
+  --davante-bg: #f4f6f9;
+
+  /* Sobrescribir variables de Bootstrap */
+  --bs-primary: var(--davante-blue);
+  --bs-primary-rgb: 0, 51, 160;
+  --bs-body-font-family: "Poppins", sans-serif;
+  --bs-body-bg: var(--davante-bg);
+}
