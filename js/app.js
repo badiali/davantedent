@@ -23,6 +23,9 @@ class Cita {
   }
 }
 
+// --- VARIABLES GLOBALES ---
+let ordenAscendente = true; // Controla el sentido de la ordenación
+
 // --- ALMACENAMIENTO (LOCALSTORAGE) ---
 
 // Recuperar el array de citas o un array vacío si es la primera
@@ -38,8 +41,8 @@ function guardarCitasEnStorage(citas) {
 
 // --- RENDER PARA LA TABLA DE CITAS ---
 
-function renderizarTabla() {
-  const citas = obtenerCitas();
+function renderizarTabla(listaCitas = null) {
+  const citas = listaCitas ? listaCitas : obtenerCitas();
   const tbody = document.getElementById("tablaCuerpo");
   const contador = document.getElementById("contadorCitas");
 
@@ -225,4 +228,30 @@ window.eliminarCita = function (id) {
       limpiarFormulario();
     }
   }
+};
+
+// --- FUNCIÓN DE ORDENACIÓN ---
+window.ordenarPorFecha = function () {
+  let citas = obtenerCitas();
+
+  citas.sort((a, b) => {
+    // Creamos objetos Date combinando fecha y hora para comparar
+    const fechaA = new Date(a.fecha + "T" + a.hora);
+    const fechaB = new Date(b.fecha + "T" + b.hora);
+
+    // Retornamos la diferencia según el sentido de la ordenación
+    return ordenAscendente ? fechaA - fechaB : fechaB - fechaA;
+  });
+
+  // Invertimos el sentido para la próxima vez que se pulse
+  ordenAscendente = !ordenAscendente;
+
+  // Actualizamos el icono visual
+  const icono = document.getElementById("iconoOrden");
+  if (icono) {
+    icono.className = ordenAscendente ? "bi bi-sort-down" : "bi bi-sort-up";
+  }
+
+  // Volvemos a pintar la tabla con la lista YA ordenada
+  renderizarTabla(citas);
 };
