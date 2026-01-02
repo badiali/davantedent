@@ -171,7 +171,22 @@
                 <table class="table align-middle mb-0">
                   <thead>
                     <tr>
-                      <th class="col-orden">#</th>
+                      <th
+                        class="col-orden"
+                        style="cursor: pointer"
+                        onclick="ordenarPorId()"
+                        title="Ordenar por creación"
+                      >
+                        <div
+                          class="d-flex align-items-center justify-content-center gap-1"
+                        >
+                          <span>#</span>
+                          <i
+                            id="iconoOrdenId"
+                            class="bi bi-filter text-muted"
+                          ></i>
+                        </div>
+                      </th>
                       <th
                         class="col-fecha"
                         onclick="ordenarPorFecha()"

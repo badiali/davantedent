@@ -9,7 +9,8 @@ class Cita {
     dni,
     telefono,
     fechaNacimiento,
-    observaciones
+    observaciones,
+    numero
   ) {
     this.id = id;
     this.fecha = fecha;
@@ -20,11 +21,13 @@ class Cita {
     this.telefono = telefono;
     this.fechaNacimiento = fechaNacimiento;
     this.observaciones = observaciones;
+    this.numero = numero;
   }
 }
 
 // --- VARIABLES GLOBALES ---
-let ordenAscendente = true; // Controla el sentido de la ordenación
+let ordenFechaAscendente = true; // Controla el sentido de la ordenación
+let ordenIdAscendente = true; // Controla el orden por ID
 
 // --- ALMACENAMIENTO (LOCALSTORAGE) ---
 
@@ -41,19 +44,23 @@ function guardarCitasEnStorage(citas) {
 
 // --- RENDER PARA LA TABLA DE CITAS ---
 
+// --- LÓGICA DE VISUALIZACIÓN (RENDER) ---
+
 function renderizarTabla(listaCitas = null) {
-  // Si listaCitas es un array, lo usamos. Si no (es null o un evento), leemos del Storage.
+  // Si recibimos una lista (ej. ordenada), la usamos.
+  // Si no (es null o un evento), leemos del LocalStorage.
   const citas = Array.isArray(listaCitas) ? listaCitas : obtenerCitas();
+
   const tbody = document.getElementById("tablaCuerpo");
   const contador = document.getElementById("contadorCitas");
 
-  // Limpiamos la tabla antes de repintar
+  // Limpiamos la tabla
   tbody.innerHTML = "";
 
-  // Actualizamos el badge contador
-  contador.innerText = citas.length;
+  // Actualizamos el contador total
+  if (contador) contador.innerText = citas.length;
 
-  // Si no hay datos, mostramos mensaje
+  // Si no hay datos
   if (citas.length === 0) {
     tbody.innerHTML = `
             <tr>
@@ -65,15 +72,14 @@ function renderizarTabla(listaCitas = null) {
     return;
   }
 
-  // Si hay datos, generamos las filas
+  // Generamos las filas
   citas.forEach((cita, index) => {
     const fila = document.createElement("tr");
 
-    // Calculamos el número de orden (index empieza en 0, así que sumamos 1)
-    const numeroOrden = index + 1;
+    const numeroVisual = cita.numero || index + 1;
 
     fila.innerHTML = `
-            <td class="fw-bold text-center text-secondary">${numeroOrden}</td>
+            <td class="fw-bold text-center text-secondary">${numeroVisual}</td>
             <td>
                 <div class="fw-bold">${cita.fecha}</div>
                 <div class="small text-muted"><i class="bi bi-stopwatch"></i> ${cita.hora}</div>
@@ -100,9 +106,6 @@ function renderizarTabla(listaCitas = null) {
     tbody.appendChild(fila);
   });
 }
-
-// Al cargar el DOM: Renderiza la tabla
-document.addEventListener("DOMContentLoaded", () => renderizarTabla());
 
 // --- UTILIDADES ---
 
@@ -149,8 +152,23 @@ document.getElementById("formCitas").addEventListener("submit", function (e) {
   }
 
   // RECOGIDA DE DATOS
+  let citas = obtenerCitas(); // Leemos las citas ANTES de crear la nueva
+  let nuevoNumero;
+
+  if (idCita) {
+    // Si editamos, mantenemos el número que ya tenía
+    const citaExistente = citas.find((c) => c.id == idCita);
+    nuevoNumero = citaExistente ? citaExistente.numero : 1;
+  } else {
+    // Si es nueva, calculamos el siguiente número (max + 1)
+    // Si no hay citas, empezamos en 1
+    const maxNumero =
+      citas.length > 0 ? Math.max(...citas.map((c) => c.numero || 0)) : 0;
+    nuevoNumero = maxNumero + 1;
+  }
+
   const nuevaCita = new Cita(
-    idCita ? parseInt(idCita) : Date.now(), // Si editamos mantenemos ID, si no, generamos timestamp
+    idCita ? parseInt(idCita) : Date.now(),
     document.getElementById("fecha").value,
     document.getElementById("hora").value,
     document.getElementById("nombre").value,
@@ -158,20 +176,15 @@ document.getElementById("formCitas").addEventListener("submit", function (e) {
     document.getElementById("dni").value,
     telefono,
     document.getElementById("fechaNacimiento").value,
-    document.getElementById("observaciones").value
+    document.getElementById("observaciones").value,
+    nuevoNumero // <--- Pasamos el número calculado
   );
 
   // LÓGICA DE NEGOCIO (Insertar o Actualizar)
-  let citas = obtenerCitas();
-
   if (idCita) {
-    // MODO EDICIÓN: Buscamos la posición y sobrescribimos
     const index = citas.findIndex((c) => c.id == idCita);
-    if (index !== -1) {
-      citas[index] = nuevaCita;
-    }
+    if (index !== -1) citas[index] = nuevaCita;
   } else {
-    // MODO CREACIÓN: Añadimos al final
     citas.push(nuevaCita);
   }
 
@@ -231,28 +244,73 @@ window.eliminarCita = function (id) {
   }
 };
 
-// --- FUNCIÓN DE ORDENACIÓN ---
+// --- ORDENACIÓN POR FECHA ---
 window.ordenarPorFecha = function () {
   let citas = obtenerCitas();
 
+  // Invertimos el estado ANTES de ordenar
+  ordenFechaAscendente = !ordenFechaAscendente;
+
   citas.sort((a, b) => {
-    // Creamos objetos Date combinando fecha y hora para comparar
     const fechaA = new Date(a.fecha + "T" + a.hora);
     const fechaB = new Date(b.fecha + "T" + b.hora);
-
-    // Retornamos la diferencia según el sentido de la ordenación
-    return ordenAscendente ? fechaA - fechaB : fechaB - fechaA;
+    // Usamos el nuevo estado para decidir el orden
+    return ordenFechaAscendente ? fechaA - fechaB : fechaB - fechaA;
   });
 
-  // Invertimos el sentido para la próxima vez que se pulse
-  ordenAscendente = !ordenAscendente;
-
-  // Actualizamos el icono visual
-  const icono = document.getElementById("iconoOrden");
-  if (icono) {
-    icono.className = ordenAscendente ? "bi bi-sort-down" : "bi bi-sort-up";
-  }
-
-  // Volvemos a pintar la tabla con la lista YA ordenada
+  actualizarIconosOrden("fecha");
   renderizarTabla(citas);
 };
+
+// --- ORDENACIÓN POR ID ---
+window.ordenarPorId = function () {
+  let citas = obtenerCitas();
+
+  // Invertimos el estado ANTES de ordenar
+  // Como empieza en true, el primer clic lo pone en false (Descendente)
+  ordenIdAscendente = !ordenIdAscendente;
+
+  citas.sort((a, b) => {
+    const numA = a.numero || 0;
+    const numB = b.numero || 0;
+    return ordenIdAscendente ? numA - numB : numB - numA;
+  });
+
+  actualizarIconosOrden("id");
+  renderizarTabla(citas);
+};
+
+// --- ACTUALIZACIÓN DE ICONOS ---
+function actualizarIconosOrden(tipo) {
+  const iconoFecha = document.getElementById("iconoOrden");
+  const iconoId = document.getElementById("iconoOrdenId");
+
+  // Iconos de Bootstrap:
+  // sort-down = Mayor arriba (Descendente visualmente en listas) o A-Z
+  // sort-up = Menor arriba
+
+  if (tipo === "fecha") {
+    iconoFecha.className = ordenFechaAscendente
+      ? "bi bi-sort-down text-primary"
+      : "bi bi-sort-up text-primary";
+    if (iconoId) iconoId.className = "bi bi-filter text-muted";
+  } else {
+    // Si ordenIdAscendente es true (1-9), mostramos numeric-down
+    // Si es false (9-1), mostramos numeric-up-alt
+    if (iconoId)
+      iconoId.className = ordenIdAscendente
+        ? "bi bi-sort-numeric-down text-primary"
+        : "bi bi-sort-numeric-up-alt text-primary";
+    iconoFecha.className = "bi bi-filter text-muted";
+  }
+}
+
+// Al cargar el DOM: Renderiza la tabla
+document.addEventListener("DOMContentLoaded", () => {
+  renderizarTabla();
+  // Marcamos visualmente que está ordenado por ID al inicio
+  const iconoId = document.getElementById("iconoOrdenId");
+  if (iconoId) {
+    iconoId.className = "bi bi-sort-numeric-down text-primary";
+  }
+});
