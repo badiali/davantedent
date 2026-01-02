@@ -112,5 +112,62 @@ function limpiarFormulario() {
   errorDiv.classList.add("d-none");
 }
 
+// --- CONTROLADOR DEL FORMULARIO (CREATE / UPDATE) ---
+
+document.getElementById("formCitas").addEventListener("submit", function (e) {
+  e.preventDefault(); // Evitamos que la página se recargue
+
+  const idCita = document.getElementById("idCita").value;
+  const telefono = document.getElementById("telefono").value;
+  const errorDiv = document.getElementById("mensajeError");
+  const textoError = document.getElementById("textoError");
+
+  // VALIDACIÓN
+  // Reiniciamos errores
+  errorDiv.classList.add("d-none");
+
+  // Expresión regular para validar teléfono a 9 números
+  const telefonoRegex = /^[0-9]{9}$/;
+
+  if (!telefonoRegex.test(telefono)) {
+    textoError.innerText =
+      "Error: El teléfono debe contener exactamente 9 números.";
+    errorDiv.classList.remove("d-none");
+    return; // Detenemos la función (no se guarda nada)
+  }
+
+  // RECOGIDA DE DATOS
+  const nuevaCita = new Cita(
+    idCita ? parseInt(idCita) : Date.now(), // Si editamos mantenemos ID, si no, generamos timestamp
+    document.getElementById("fecha").value,
+    document.getElementById("hora").value,
+    document.getElementById("nombre").value,
+    document.getElementById("apellidos").value,
+    document.getElementById("dni").value,
+    telefono,
+    document.getElementById("fechaNacimiento").value,
+    document.getElementById("observaciones").value
+  );
+
+  // LÓGICA DE NEGOCIO (Insertar o Actualizar)
+  let citas = obtenerCitas();
+
+  if (idCita) {
+    // MODO EDICIÓN: Buscamos la posición y sobrescribimos
+    const index = citas.findIndex((c) => c.id == idCita);
+    if (index !== -1) {
+      citas[index] = nuevaCita;
+    }
+  } else {
+    // MODO CREACIÓN: Añadimos al final
+    citas.push(nuevaCita);
+  }
+
+  // PERSISTENCIA Y REFRESCO
+  guardarCitasEnStorage(citas); // Guardar en LocalStorage
+  renderizarTabla(); // Repintar la tabla
+  limpiarFormulario(); // Dejar el form listo para la siguiente
+});
+
 // Al cargar el DOM: Renderiza la tabla
 document.addEventListener("DOMContentLoaded", renderizarTabla);
