@@ -92,6 +92,9 @@ function renderizarTabla() {
   });
 }
 
+// Al cargar el DOM: Renderiza la tabla
+document.addEventListener("DOMContentLoaded", renderizarTabla);
+
 // --- UTILIDADES ---
 
 function limpiarFormulario() {
@@ -169,5 +172,52 @@ document.getElementById("formCitas").addEventListener("submit", function (e) {
   limpiarFormulario(); // Dejar el form listo para la siguiente
 });
 
-// Al cargar el DOM: Renderiza la tabla
-document.addEventListener("DOMContentLoaded", renderizarTabla);
+// --- ACCIONES DE TABLA (BORRAR / EDITAR) ---
+
+// Función para cargar datos en el formulario para editar
+window.cargarCita = function (id) {
+  const citas = obtenerCitas();
+  const cita = citas.find((c) => c.id == id);
+
+  if (cita) {
+    // Rellenar campos
+    document.getElementById("idCita").value = cita.id;
+    document.getElementById("fecha").value = cita.fecha;
+    document.getElementById("hora").value = cita.hora;
+    document.getElementById("nombre").value = cita.nombre;
+    document.getElementById("apellidos").value = cita.apellidos;
+    document.getElementById("dni").value = cita.dni;
+    document.getElementById("telefono").value = cita.telefono;
+    document.getElementById("fechaNacimiento").value = cita.fechaNacimiento;
+    document.getElementById("observaciones").value = cita.observaciones;
+
+    // Cambiar estado del botón a "Actualizar"
+    const btn = document.getElementById("btnGuardar");
+    btn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i>Actualizar Cita';
+
+    // Hacer scroll suave hacia el formulario (para móviles)
+    document.getElementById("formCitas").scrollIntoView({ behavior: "smooth" });
+  }
+};
+
+// Función para eliminar
+window.eliminarCita = function (id) {
+  if (
+    confirm(
+      "¿Estás seguro de que deseas eliminar esta cita de la base de datos?"
+    )
+  ) {
+    let citas = obtenerCitas();
+    // Filtramos para quedarnos con todas MENOS la que queremos borrar
+    citas = citas.filter((c) => c.id != id);
+
+    guardarCitasEnStorage(citas);
+    renderizarTabla();
+
+    // Si el usuario estaba editando justo la cita que borró, limpiamos
+    const idEditando = document.getElementById("idCita").value;
+    if (idEditando == id) {
+      limpiarFormulario();
+    }
+  }
+};
