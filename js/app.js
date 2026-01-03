@@ -1,3 +1,8 @@
+// --- VARIABLES GLOBALES ---
+// Control de ordenación (True = Ascendente, False = Descendente)
+let ordenFechaAscendente = true;
+let ordenIdAscendente = true;
+
 // --- CLASE CITA ---
 class Cita {
   constructor(
@@ -25,10 +30,6 @@ class Cita {
   }
 }
 
-// --- VARIABLES GLOBALES ---
-let ordenFechaAscendente = true; // Controla el sentido de la ordenación
-let ordenIdAscendente = true; // Controla el orden por ID
-
 // --- ALMACENAMIENTO (LOCALSTORAGE) ---
 
 // Recuperar el array de citas o un array vacío si es la primera
@@ -42,10 +43,145 @@ function guardarCitasEnStorage(citas) {
   localStorage.setItem("citasDavanteDent", JSON.stringify(citas));
 }
 
-// --- RENDER PARA LA TABLA DE CITAS ---
+// --- FUNCIONES DE VALIDACIÓN ---
 
-// --- LÓGICA DE VISUALIZACIÓN (RENDER) ---
+function esDniValido(dni) {
+  dni = dni.toUpperCase().trim().replace(/\s/g, "").replace(/-/g, "");
+  const patron = /^([XYZ]\d{7,8}|\d{8})([A-Z])$/;
+  const coincidencias = dni.match(patron);
+  if (!coincidencias) return false;
+  const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+  let numeroStr = coincidencias[1]
+    .replace("X", "0")
+    .replace("Y", "1")
+    .replace("Z", "2");
+  return letras[parseInt(numeroStr, 10) % 23] === coincidencias[2];
+}
 
+function esTelefonoValido(telefono) {
+  return /^[6789]\d{8}$/.test(telefono.replace(/\s/g, ""));
+}
+
+// --- CONTROLADOR DEL FORMULARIO (CREATE / UPDATE) ---
+
+document
+  .getElementById("formCitas")
+  .addEventListener("submit", function (event) {
+    // Detener el envío automático
+    event.preventDefault();
+    event.stopPropagation();
+
+    const form = this; // El formulario
+    const dniInput = document.getElementById("dni");
+    const telInput = document.getElementById("telefono");
+    const errorDniDiv = document.getElementById("errorDni");
+    const errorTelDiv = document.getElementById("errorTelefono");
+
+    // RESETEAR VALIDACIONES PERSONALIZADAS
+    // Quitamos 'is-invalid' manuales para volver a comprobar
+    dniInput.setCustomValidity("");
+    telInput.setCustomValidity("");
+
+    // VALIDACIÓN PERSONALIZADA: DNI
+    if (dniInput.value.trim() !== "") {
+      if (!esDniValido(dniInput.value)) {
+        // Truco: setCustomValidity marca el campo como inválido para Bootstrap
+        dniInput.setCustomValidity("DNI Incorrecto");
+        errorDniDiv.textContent =
+          "El formato o la letra del DNI/NIE no son correctos.";
+      } else {
+        dniInput.setCustomValidity(""); // Es válido
+      }
+    } else {
+      errorDniDiv.textContent = "El DNI es obligatorio.";
+    }
+
+    // VALIDACIÓN PERSONALIZADA: TELÉFONO
+    if (telInput.value.trim() !== "") {
+      if (!esTelefonoValido(telInput.value)) {
+        telInput.setCustomValidity("Teléfono Incorrecto");
+        errorTelDiv.textContent =
+          "Debe ser un móvil o fijo válido (9 dígitos).";
+      } else {
+        telInput.setCustomValidity("");
+      }
+    } else {
+      errorTelDiv.textContent = "El teléfono es obligatorio.";
+    }
+
+    // COMPROBACIÓN FINAL DE BOOTSTRAP
+    if (!form.checkValidity()) {
+      // Si algo falla (required o nuestros customValidity), mostramos colores
+      form.classList.add("was-validated");
+      return; // PARAMOS AQUÍ
+    }
+
+    // --- SI LLEGAMOS AQUÍ, TODO ESTÁ OK ---
+
+    // Guardado de datos (Tu lógica de siempre)
+    guardarDatosCita();
+  });
+
+function guardarDatosCita() {
+  const idCita = document.getElementById("idCita").value;
+  const citas = obtenerCitas();
+  let nuevoNumero;
+
+  if (idCita) {
+    const citaExistente = citas.find((c) => c.id == idCita);
+    nuevoNumero = citaExistente ? citaExistente.numero : 1;
+  } else {
+    const maxNumero =
+      citas.length > 0 ? Math.max(...citas.map((c) => c.numero || 0)) : 0;
+    nuevoNumero = maxNumero + 1;
+  }
+
+  const nuevaCita = new Cita(
+    idCita ? parseInt(idCita) : Date.now(),
+    document.getElementById("fecha").value,
+    document.getElementById("hora").value,
+    document.getElementById("nombre").value.trim(),
+    document.getElementById("apellidos").value.trim(),
+    document.getElementById("dni").value.toUpperCase().trim(),
+    document.getElementById("telefono").value.trim(),
+    document.getElementById("fechaNacimiento").value,
+    document.getElementById("observaciones").value.trim(),
+    nuevoNumero
+  );
+
+  if (idCita) {
+    const index = citas.findIndex((c) => c.id == idCita);
+    if (index !== -1) citas[index] = nuevaCita;
+  } else {
+    citas.push(nuevaCita);
+  }
+
+  guardarCitasEnStorage(citas);
+  renderizarTabla();
+  limpiarFormulario(); // Importante llamar a la nueva versión de abajo
+}
+
+window.limpiarFormulario = function () {
+  const form = document.getElementById("formCitas");
+
+  // Resetear valores nativos
+  form.reset();
+  document.getElementById("idCita").value = "";
+
+  // ELIMINAR ESTILOS DE VALIDACIÓN (Verde/Rojo)
+  form.classList.remove("was-validated");
+
+  // Restaurar botón y título
+  const btnGuardar = document.getElementById("btnGuardar");
+  btnGuardar.innerHTML = '<i class="bi bi-save me-2"></i>Guardar Cita';
+  btnGuardar.classList.remove("btn-warning");
+  btnGuardar.classList.add("btn-primary");
+
+  document.querySelector(".card-header h5").innerHTML =
+    '<i class="bi bi-plus-circle me-2"></i>Nueva Cita';
+};
+
+// --- GESTIÓN DE LA TABLA (VISTA) ---
 function renderizarTabla(listaCitas = null) {
   // Si recibimos una lista (ej. ordenada), la usamos.
   // Si no (es null o un evento), leemos del LocalStorage.
@@ -126,108 +262,8 @@ function renderizarTabla(listaCitas = null) {
   });
 }
 
-// --- UTILIDADES ---
+// --- ACCIONES (EDITAR / BORRAR / MODAL) ---
 
-window.limpiarFormulario = function () {
-  const form = document.getElementById("formCitas");
-
-  // Resetear valores nativos
-  form.reset();
-  document.getElementById("idCita").value = "";
-
-  // ELIMINAR ESTILOS DE VALIDACIÓN (Verde/Rojo)
-  form.classList.remove("was-validated");
-
-  // Restaurar botón y título
-  const btnGuardar = document.getElementById("btnGuardar");
-  btnGuardar.innerHTML = '<i class="bi bi-save me-2"></i>Guardar Cita';
-  btnGuardar.classList.remove("btn-warning");
-  btnGuardar.classList.add("btn-primary");
-
-  document.querySelector(".card-header h5").innerHTML =
-    '<i class="bi bi-plus-circle me-2"></i>Nueva Cita';
-};
-
-function esDniValido(dni) {
-  dni = dni.toUpperCase().trim().replace(/\s/g, "").replace(/-/g, "");
-  const patron = /^([XYZ]\d{7,8}|\d{8})([A-Z])$/;
-  const coincidencias = dni.match(patron);
-  if (!coincidencias) return false;
-  const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
-  let numeroStr = coincidencias[1]
-    .replace("X", "0")
-    .replace("Y", "1")
-    .replace("Z", "2");
-  return letras[parseInt(numeroStr, 10) % 23] === coincidencias[2];
-}
-
-function esTelefonoValido(telefono) {
-  return /^[6789]\d{8}$/.test(telefono.replace(/\s/g, ""));
-}
-
-// --- CONTROLADOR DEL FORMULARIO (CREATE / UPDATE) ---
-
-document
-  .getElementById("formCitas")
-  .addEventListener("submit", function (event) {
-    // Detener el envío automático
-    event.preventDefault();
-    event.stopPropagation();
-
-    const form = this; // El formulario
-    const dniInput = document.getElementById("dni");
-    const telInput = document.getElementById("telefono");
-    const errorDniDiv = document.getElementById("errorDni");
-    const errorTelDiv = document.getElementById("errorTelefono");
-
-    // RESETEAR VALIDACIONES PERSONALIZADAS
-    // Quitamos 'is-invalid' manuales para volver a comprobar
-    dniInput.setCustomValidity("");
-    telInput.setCustomValidity("");
-
-    // VALIDACIÓN PERSONALIZADA: DNI
-    if (dniInput.value.trim() !== "") {
-      if (!esDniValido(dniInput.value)) {
-        // Truco: setCustomValidity marca el campo como inválido para Bootstrap
-        dniInput.setCustomValidity("DNI Incorrecto");
-        errorDniDiv.textContent =
-          "El formato o la letra del DNI/NIE no son correctos.";
-      } else {
-        dniInput.setCustomValidity(""); // Es válido
-      }
-    } else {
-      errorDniDiv.textContent = "El DNI es obligatorio.";
-    }
-
-    // VALIDACIÓN PERSONALIZADA: TELÉFONO
-    if (telInput.value.trim() !== "") {
-      if (!esTelefonoValido(telInput.value)) {
-        telInput.setCustomValidity("Teléfono Incorrecto");
-        errorTelDiv.textContent =
-          "Debe ser un móvil o fijo válido (9 dígitos).";
-      } else {
-        telInput.setCustomValidity("");
-      }
-    } else {
-      errorTelDiv.textContent = "El teléfono es obligatorio.";
-    }
-
-    // COMPROBACIÓN FINAL DE BOOTSTRAP
-    if (!form.checkValidity()) {
-      // Si algo falla (required o nuestros customValidity), mostramos colores
-      form.classList.add("was-validated");
-      return; // PARAMOS AQUÍ
-    }
-
-    // --- SI LLEGAMOS AQUÍ, TODO ESTÁ OK ---
-
-    // Guardado de datos (Tu lógica de siempre)
-    guardarDatosCita();
-  });
-
-// --- ACCIONES DE TABLA (BORRAR / EDITAR) ---
-
-// Función para cargar datos en el formulario para editar
 window.cargarCita = function (id) {
   const citas = obtenerCitas();
   const cita = citas.find((c) => c.id == id);
@@ -253,7 +289,6 @@ window.cargarCita = function (id) {
   }
 };
 
-// Función para eliminar
 window.eliminarCita = function (id) {
   if (
     confirm(
@@ -275,46 +310,28 @@ window.eliminarCita = function (id) {
   }
 };
 
-function guardarDatosCita() {
-  const idCita = document.getElementById("idCita").value;
+window.verObservaciones = function (id) {
   const citas = obtenerCitas();
-  let nuevoNumero;
-
-  if (idCita) {
-    const citaExistente = citas.find((c) => c.id == idCita);
-    nuevoNumero = citaExistente ? citaExistente.numero : 1;
-  } else {
-    const maxNumero =
-      citas.length > 0 ? Math.max(...citas.map((c) => c.numero || 0)) : 0;
-    nuevoNumero = maxNumero + 1;
+  const cita = citas.find((c) => c.id == id);
+  if (cita) {
+    // Rellenamos el título con el nombre del paciente
+    document.getElementById("modalTitulo").innerHTML = `
+            <i class="bi bi-file-text me-2"></i><strong>${cita.nombre} ${cita.apellidos}</strong>
+        `;
+    // Rellenamos el cuerpo. Si está vacío, ponemos un mensaje por defecto.
+    const texto = cita.observaciones
+      ? cita.observaciones
+      : "No hay observaciones registradas para este paciente.";
+    document.getElementById("modalTexto").innerText = texto;
+    // Abrimos el modal usando la API de Bootstrap 5
+    const modalElement = document.getElementById("modalObservaciones");
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
   }
+};
 
-  const nuevaCita = new Cita(
-    idCita ? parseInt(idCita) : Date.now(),
-    document.getElementById("fecha").value,
-    document.getElementById("hora").value,
-    document.getElementById("nombre").value.trim(),
-    document.getElementById("apellidos").value.trim(),
-    document.getElementById("dni").value.toUpperCase().trim(),
-    document.getElementById("telefono").value.trim(),
-    document.getElementById("fechaNacimiento").value,
-    document.getElementById("observaciones").value.trim(),
-    nuevoNumero
-  );
+// --- ORDENACIÓN Y EXPORTACIÓN ---
 
-  if (idCita) {
-    const index = citas.findIndex((c) => c.id == idCita);
-    if (index !== -1) citas[index] = nuevaCita;
-  } else {
-    citas.push(nuevaCita);
-  }
-
-  guardarCitasEnStorage(citas);
-  renderizarTabla();
-  limpiarFormulario(); // Importante llamar a la nueva versión de abajo
-}
-
-// --- ORDENACIÓN POR FECHA ---
 window.ordenarPorFecha = function () {
   let citas = obtenerCitas();
 
@@ -332,7 +349,6 @@ window.ordenarPorFecha = function () {
   renderizarTabla(citas);
 };
 
-// --- ORDENACIÓN POR ID ---
 window.ordenarPorId = function () {
   let citas = obtenerCitas();
 
@@ -350,7 +366,6 @@ window.ordenarPorId = function () {
   renderizarTabla(citas);
 };
 
-// --- ACTUALIZACIÓN DE ICONOS ---
 function actualizarIconosOrden(tipo) {
   const iconoFecha = document.getElementById("iconoOrden");
   const iconoId = document.getElementById("iconoOrdenId");
@@ -375,28 +390,6 @@ function actualizarIconosOrden(tipo) {
   }
 }
 
-// --- FUNCIÓN PARA VER OBSERVACIONES EN MODAL ---
-window.verObservaciones = function (id) {
-  const citas = obtenerCitas();
-  const cita = citas.find((c) => c.id == id);
-  if (cita) {
-    // Rellenamos el título con el nombre del paciente
-    document.getElementById("modalTitulo").innerHTML = `
-            <i class="bi bi-file-text me-2"></i><strong>${cita.nombre} ${cita.apellidos}</strong>
-        `;
-    // Rellenamos el cuerpo. Si está vacío, ponemos un mensaje por defecto.
-    const texto = cita.observaciones
-      ? cita.observaciones
-      : "No hay observaciones registradas para este paciente.";
-    document.getElementById("modalTexto").innerText = texto;
-    // Abrimos el modal usando la API de Bootstrap 5
-    const modalElement = document.getElementById("modalObservaciones");
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
-  }
-};
-
-// --- FUNCIÓN DE EXPORTACIÓN A CSV (EXCEL) ---
 window.exportarCitasCSV = function () {
   const citas = obtenerCitas();
 
@@ -455,7 +448,8 @@ window.exportarCitasCSV = function () {
   document.body.removeChild(link);
 };
 
-// Al cargar el DOM: Renderiza la tabla
+// --- INICIALIZACIÓN ---
+
 document.addEventListener("DOMContentLoaded", () => {
   renderizarTabla();
   // Marcamos visualmente que está ordenado por ID al inicio
