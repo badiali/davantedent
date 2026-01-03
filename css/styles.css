@@ -140,13 +140,18 @@ body {
   width: 5%;
   text-align: center;
   color: var(--davante-blue);
+  cursor: pointer;
+}
+.col-orden:hover {
+  background-color: #e9ecef;
 }
 .col-fecha {
   width: 15%;
-  cursor: pointer; /* Indica que se puede hacer clic para ordenar */
+  color: var(--davante-blue);
+  cursor: pointer;
 }
 .col-fecha:hover {
-  background-color: #e9ecef; /* Un pequeño efecto visual al pasar el ratón */
+  background-color: #e9ecef;
 }
 .col-paciente {
   width: 25%;

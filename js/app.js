@@ -79,7 +79,7 @@ function renderizarTabla(listaCitas = null) {
     const numeroVisual = cita.numero || index + 1;
 
     fila.innerHTML = `
-            <td class="fw-bold text-center text-secondary">${numeroVisual}</td>
+            <td class="fw-bold text-center text-muted">${numeroVisual}</td>
             <td>
                 <div class="fw-bold">${cita.fecha}</div>
                 <div class="small text-muted"><i class="bi bi-stopwatch"></i> ${cita.hora}</div>
