@@ -1,6 +1,6 @@
 # 🦷 Gestión de Citas - DavanteDent
 
-Aplicación web progresiva SPA (Single Page Application) diseñada para la gestión de citas dentales sin dependencia de backend.
+Aplicación web SPA (Single Page Application) diseñada para la gestión de citas sin backend.
 
 ![Estado](https://img.shields.io/badge/Estado-Completado-success?style=flat-square)
 ![Stack](https://img.shields.io/badge/Tech-HTML5_|_Bootstrap_5_|_JS_ES6-blue?style=flat-square)
