@@ -95,10 +95,10 @@ function renderizarTabla(listaCitas = null) {
             </td>
             <td><small class="text-truncate d-inline-block" style="max-width: 150px;">${cita.observaciones}</small></td>
             <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="cargarCita(${cita.id})" title="Editar">
+                <button class="btn btn-sm btn-primary me-1" onclick="cargarCita(${cita.id})" title="Editar">
                     <i class="bi bi-pencil-square"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="eliminarCita(${cita.id})" title="Borrar">
+                <button class="btn btn-sm btn-secondary" onclick="eliminarCita(${cita.id})" title="Borrar">
                     <i class="bi bi-trash3-fill"></i>
                 </button>
             </td>
