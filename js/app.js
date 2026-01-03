@@ -71,18 +71,18 @@ document
     event.preventDefault();
     event.stopPropagation();
 
-    const form = this; // El formulario
+    const form = this;
     const dniInput = document.getElementById("dni");
     const telInput = document.getElementById("telefono");
     const errorDniDiv = document.getElementById("errorDni");
     const errorTelDiv = document.getElementById("errorTelefono");
 
-    // RESETEAR VALIDACIONES PERSONALIZADAS
+    // RESETEAR VALIDACIONES
     // Quitamos 'is-invalid' manuales para volver a comprobar
     dniInput.setCustomValidity("");
     telInput.setCustomValidity("");
 
-    // VALIDACIÓN PERSONALIZADA: DNI
+    // VALIDACIÓN: DNI
     if (dniInput.value.trim() !== "") {
       if (!esDniValido(dniInput.value)) {
         // Truco: setCustomValidity marca el campo como inválido para Bootstrap
@@ -96,7 +96,7 @@ document
       errorDniDiv.textContent = "El DNI es obligatorio.";
     }
 
-    // VALIDACIÓN PERSONALIZADA: TELÉFONO
+    // VALIDACIÓN: TELÉFONO
     if (telInput.value.trim() !== "") {
       if (!esTelefonoValido(telInput.value)) {
         telInput.setCustomValidity("Teléfono Incorrecto");
@@ -111,14 +111,12 @@ document
 
     // COMPROBACIÓN FINAL DE BOOTSTRAP
     if (!form.checkValidity()) {
-      // Si algo falla (required o nuestros customValidity), mostramos colores
+      // Si algo falla, mostramos colores
       form.classList.add("was-validated");
-      return; // PARAMOS AQUÍ
+      return;
     }
 
-    // --- SI LLEGAMOS AQUÍ, TODO ESTÁ OK ---
-
-    // Guardado de datos (Tu lógica de siempre)
+    // Guardado de datos
     guardarDatosCita();
   });
 
@@ -158,17 +156,17 @@ function guardarDatosCita() {
 
   guardarCitasEnStorage(citas);
   renderizarTabla();
-  limpiarFormulario(); // Importante llamar a la nueva versión de abajo
+  limpiarFormulario();
 }
 
 window.limpiarFormulario = function () {
   const form = document.getElementById("formCitas");
 
-  // Resetear valores nativos
+  // Resetear valores
   form.reset();
   document.getElementById("idCita").value = "";
 
-  // ELIMINAR ESTILOS DE VALIDACIÓN (Verde/Rojo)
+  // ELIMINAR ESTILOS DE VALIDACIÓN
   form.classList.remove("was-validated");
 
   // Restaurar botón y título
@@ -183,10 +181,7 @@ window.limpiarFormulario = function () {
 
 // --- GESTIÓN DE LA TABLA (VISTA) ---
 function renderizarTabla(listaCitas = null) {
-  // Si recibimos una lista (ej. ordenada), la usamos.
-  // Si no (es null o un evento), leemos del LocalStorage.
   const citas = Array.isArray(listaCitas) ? listaCitas : obtenerCitas();
-
   const tbody = document.getElementById("tablaCuerpo");
   const contador = document.getElementById("contadorCitas");
 
@@ -211,7 +206,6 @@ function renderizarTabla(listaCitas = null) {
   // Generamos las filas
   citas.forEach((cita, index) => {
     const fila = document.createElement("tr");
-
     const numeroVisual = cita.numero || index + 1;
 
     fila.innerHTML = `
@@ -323,7 +317,7 @@ window.verObservaciones = function (id) {
       ? cita.observaciones
       : "No hay observaciones registradas para este paciente.";
     document.getElementById("modalTexto").innerText = texto;
-    // Abrimos el modal usando la API de Bootstrap 5
+    // Abrimos el modal usando la API de Bootstrap
     const modalElement = document.getElementById("modalObservaciones");
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
@@ -335,13 +329,12 @@ window.verObservaciones = function (id) {
 window.ordenarPorFecha = function () {
   let citas = obtenerCitas();
 
-  // Invertimos el estado ANTES de ordenar
+  // Invertimos el estado
   ordenFechaAscendente = !ordenFechaAscendente;
 
   citas.sort((a, b) => {
     const fechaA = new Date(a.fecha + "T" + a.hora);
     const fechaB = new Date(b.fecha + "T" + b.hora);
-    // Usamos el nuevo estado para decidir el orden
     return ordenFechaAscendente ? fechaA - fechaB : fechaB - fechaA;
   });
 
@@ -352,8 +345,7 @@ window.ordenarPorFecha = function () {
 window.ordenarPorId = function () {
   let citas = obtenerCitas();
 
-  // Invertimos el estado ANTES de ordenar
-  // Como empieza en true, el primer clic lo pone en false (Descendente)
+  // Invertimos el estado
   ordenIdAscendente = !ordenIdAscendente;
 
   citas.sort((a, b) => {
@@ -369,10 +361,6 @@ window.ordenarPorId = function () {
 function actualizarIconosOrden(tipo) {
   const iconoFecha = document.getElementById("iconoOrden");
   const iconoId = document.getElementById("iconoOrdenId");
-
-  // Iconos de Bootstrap:
-  // sort-down = Mayor arriba (Descendente visualmente en listas) o A-Z
-  // sort-up = Menor arriba
 
   if (tipo === "fecha") {
     iconoFecha.className = ordenFechaAscendente
@@ -398,8 +386,8 @@ window.exportarCitasCSV = function () {
     return;
   }
 
-  // Definir las cabeceras del archivo
-  // Usamos punto y coma (;) como separador porque Excel en español lo prefiere a la coma
+  // Cabeceras del archivo
+  // Usamos punto y coma (;) como separador
   let csvContent =
     "ID;Número;Fecha;Hora;Nombre;Apellidos;DNI;Teléfono;Nacimiento;Observaciones\n";
 
