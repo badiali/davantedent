@@ -1,7 +1,5 @@
 # 🦷 Gestión de Citas - DavanteDent
 
-¡Hola! 👋 Este es mi proyecto para el **Trabajo de Enfoque** del módulo de **Desarrollo Web en Entorno Cliente**.
-
 Aplicación web progresiva SPA (Single Page Application) diseñada para la gestión de citas dentales sin dependencia de backend.
 
 ![Estado](https://img.shields.io/badge/Estado-Completado-success?style=flat-square)
@@ -19,30 +17,30 @@ Aplicación web progresiva SPA (Single Page Application) diseñada para la gesti
 
 ### 🛡️ Validación Avanzada
 
-Implementación híbrida usando la API de validación de Bootstrap 5 y lógica personalizada en JavaScript:
+Implementada usando la API de validación de Bootstrap 5 y lógica personalizada en JavaScript:
 
-- **DNI/NIE:** Validación matemática real mediante algoritmo del **Módulo 23** (no solo comprueba formato, sino que la letra sea correcta).
+- **DNI/NIE:** Validación matemática real mediante algoritmo del **Módulo 23** (comprueba formato y letra).
 - **Teléfono:** Validación mediante **RegEx** para formato español (9 dígitos comenzando por 6, 7, 8 o 9).
 - **Feedback Visual:** Indicadores de estado (verde/rojo) y mensajes de error contextuales en tiempo real.
 
 ### 🎨 UI/UX y Diseño Corporativo
 
-- **Identidad DavanteDent:** Paleta de colores personalizada (Azul `#0033a0` y Naranja `#ff6600`) integrada mediante variables CSS.
-- **Tabla Responsive:** Diseño fluido con scroll horizontal automático en móviles y celdas que no rompen el texto (`white-space: nowrap`).
+- **Identidad DavanteDent:** Paleta de colores personalizada integrada mediante variables CSS.
+- **Tabla Responsive:** Diseño fluid con scroll horizontal automático en móviles y celdas que no rompen el texto (`white-space: nowrap`).
 - **Ordenación Bidireccional:**
   - Por **Fecha/Hora** (Cronológico).
   - Por **Orden de Registro (#)** (Histórico).
 - **Modal de Observaciones:** Visualización cómoda de textos largos sin deformar la tabla.
-- **Favicon Adaptativo:** Icono SVG optimizado (Squircle) para alta visibilidad en modo claro y oscuro.
+- **Favicon Adaptativo:** Icono SVG optimizado para modo claro y oscuro.
 
 ## 🛠️ Stack Tecnológico
 
 - **HTML5:** Estructura semántica.
 - **CSS3:** Variables CSS (`:root`), Flexbox y personalización de componentes.
-- **Bootstrap 5.3:** Sistema de rejilla, componentes (Modales, Cartas) y clases de utilidad.
-- **JavaScript (Vanilla):**
+- **Bootstrap 5.3:** Grid, componentes (Modales, Cards) y utilidades.
+- **JavaScript:**
   - Manipulación del DOM.
-  - Lógica de validación (`checkValidity`, `setCustomValidity`).
+  - Validación (`checkValidity`, `setCustomValidity`).
   - Algoritmos de ordenación (`Array.sort`).
   - Manejo de `localStorage`.
 - **Bootstrap Icons:** Iconografía vectorial SVG.
