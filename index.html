@@ -134,20 +134,20 @@
                   <i class="bi bi-exclamation-triangle-fill me-2"></i>
                   <div id="textoError">Error en el formulario</div>
                 </div>
-                <div class="d-grid gap-2">
-                  <button
-                    type="submit"
-                    class="btn btn-lg btn-primary"
-                    id="btnGuardar"
-                  >
-                    <i class="bi bi-save me-2"></i>Guardar Cita
-                  </button>
+                <div class="d-flex gap-2">
                   <button
                     type="button"
-                    class="btn btn-secondary"
+                    class="btn btn-outline-secondary flex-grow-1"
                     onclick="limpiarFormulario()"
                   >
                     <i class="bi bi-x-circle me-2"></i>Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn btn-primary flex-grow-1"
+                    id="btnGuardar"
+                  >
+                    <i class="bi bi-save me-2"></i>Guardar Cita
                   </button>
                 </div>
               </form>

@@ -15,6 +15,8 @@
   /* Sobrescribir variables de Bootstrap */
   --bs-primary: var(--davante-blue);
   --bs-primary-rgb: 0, 51, 160;
+  --bs-secondary: var(--davante-orange);
+  --bs-secondary-rgb: 255, 102, 0;
   --bs-body-font-family: "Poppins", sans-serif;
   --bs-body-bg: var(--davante-bg);
 }
@@ -96,6 +98,16 @@ body {
   --bs-btn-active-bg: var(--davante-orange-hover);
   --bs-btn-active-border-color: var(--davante-orange-hover);
 }
+.btn-outline-secondary {
+  --bs-btn-color: var(--davante-orange);
+  --bs-btn-border-color: var(--davante-orange);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: var(--davante-orange);
+  --bs-btn-hover-border-color: var(--davante-orange);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: var(--davante-orange);
+  --bs-btn-active-border-color: var(--davante-orange);
+}
 
 /* --- 7. TABLA DE CITAS --- */
 .table {
@@ -143,7 +155,7 @@ body {
   width: 20%;
 }
 .col-observaciones {
-  width: 25%;
+  width: 20%;
 }
 .col-acciones {
   width: 15%;
