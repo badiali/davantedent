@@ -48,7 +48,7 @@ Implementada usando la API de validación de Bootstrap 5 y lógica personalizada
 ## 📂 Estructura del Proyecto
 
 ```text
-davante-dent/
+davantedent/
 ├── css/
 │   └── styles.css      # Variables corporativas y sobreescritura de Bootstrap
 ├── img/
