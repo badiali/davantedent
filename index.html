@@ -40,7 +40,7 @@
               </h5>
             </div>
             <div class="card-body">
-              <form id="formCitas" novalidate>
+              <form id="formCitas" class="needs-validation" novalidate>
                 <input type="hidden" id="idCita" />
                 <div class="mb-3">
                   <h6 class="text-uppercase text-muted small fw-bold">
@@ -54,6 +54,7 @@
                         id="fecha"
                         required
                       />
+                      <div class="invalid-feedback">Selecciona una fecha.</div>
                     </div>
                     <div class="col-5">
                       <input
@@ -62,6 +63,7 @@
                         id="hora"
                         required
                       />
+                      <div class="invalid-feedback">Selecciona una hora.</div>
                     </div>
                   </div>
                 </div>
@@ -77,6 +79,9 @@
                       placeholder="Nombre"
                       required
                     />
+                    <div class="invalid-feedback">
+                      El nombre es obligatorio.
+                    </div>
                   </div>
                   <div class="mb-2">
                     <input
@@ -86,6 +91,9 @@
                       placeholder="Apellidos"
                       required
                     />
+                    <div class="invalid-feedback">
+                      Los apellidos son obligatorios.
+                    </div>
                   </div>
                   <div class="row g-2 mb-2">
                     <div class="col-6">
@@ -96,6 +104,9 @@
                         placeholder="DNI"
                         required
                       />
+                      <div class="invalid-feedback" id="errorDni">
+                        DNI obligatorio.
+                      </div>
                     </div>
                     <div class="col-6">
                       <input
@@ -105,6 +116,9 @@
                         placeholder="Teléfono"
                         required
                       />
+                      <div class="invalid-feedback" id="errorTelefono">
+                        Teléfono obligatorio.
+                      </div>
                     </div>
                   </div>
                   <div>
@@ -117,6 +131,9 @@
                       id="fechaNacimiento"
                       required
                     />
+                    <div class="invalid-feedback">
+                      Fecha de nacimiento requerida.
+                    </div>
                   </div>
                 </div>
                 <div class="mb-4">
@@ -124,16 +141,8 @@
                     class="form-control"
                     id="observaciones"
                     rows="3"
-                    placeholder="Observaciones o motivo de la visita..."
+                    placeholder="Observaciones..."
                   ></textarea>
-                </div>
-                <div
-                  id="mensajeError"
-                  class="alert alert-danger d-flex align-items-center d-none"
-                  role="alert"
-                >
-                  <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                  <div id="textoError">Error en el formulario</div>
                 </div>
                 <div class="d-flex gap-2">
                   <button
@@ -163,9 +172,19 @@
               <h5 class="mb-0">
                 <i class="bi bi-calendar-check me-2"></i>Agenda del Día
               </h5>
-              <span class="badge rounded-pill bg-primary" id="contadorCitas"
-                >0</span
-              >
+              <div class="d-flex align-items-center gap-2">
+                <button
+                  class="btn btn-sm btn-success"
+                  onclick="exportarCitasCSV()"
+                  title="Descargar en Excel"
+                >
+                  <i class="bi bi-file-earmark-excel me-1"></i>Exportar
+                </button>
+
+                <span class="badge rounded-pill bg-primary" id="contadorCitas"
+                  >0</span
+                >
+              </div>
             </div>
             <div class="card-body p-0">
               <div class="table-responsive">

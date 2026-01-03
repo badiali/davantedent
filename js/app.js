@@ -128,90 +128,102 @@ function renderizarTabla(listaCitas = null) {
 
 // --- UTILIDADES ---
 
-function limpiarFormulario() {
-  // Resetear inputs nativos
-  document.getElementById("formCitas").reset();
+window.limpiarFormulario = function () {
+  const form = document.getElementById("formCitas");
 
-  // Limpiar ID oculto (volvemos a modo creación)
+  // Resetear valores nativos
+  form.reset();
   document.getElementById("idCita").value = "";
 
-  // Restaurar estado visual del botón guardar (Color Davante Blue)
-  const btn = document.getElementById("btnGuardar");
-  btn.innerHTML = '<i class="bi bi-save me-2"></i>Guardar Cita';
-  btn.classList.remove("btn-warning", "text-dark");
-  btn.classList.add("btn-primary");
+  // ELIMINAR ESTILOS DE VALIDACIÓN (Verde/Rojo)
+  form.classList.remove("was-validated");
 
-  // Ocultar alertas de error si las hubiera
-  const errorDiv = document.getElementById("mensajeError");
-  errorDiv.classList.add("d-none");
+  // Restaurar botón y título
+  const btnGuardar = document.getElementById("btnGuardar");
+  btnGuardar.innerHTML = '<i class="bi bi-save me-2"></i>Guardar Cita';
+  btnGuardar.classList.remove("btn-warning");
+  btnGuardar.classList.add("btn-primary");
+
+  document.querySelector(".card-header h5").innerHTML =
+    '<i class="bi bi-plus-circle me-2"></i>Nueva Cita';
+};
+
+function esDniValido(dni) {
+  dni = dni.toUpperCase().trim().replace(/\s/g, "").replace(/-/g, "");
+  const patron = /^([XYZ]\d{7,8}|\d{8})([A-Z])$/;
+  const coincidencias = dni.match(patron);
+  if (!coincidencias) return false;
+  const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+  let numeroStr = coincidencias[1]
+    .replace("X", "0")
+    .replace("Y", "1")
+    .replace("Z", "2");
+  return letras[parseInt(numeroStr, 10) % 23] === coincidencias[2];
+}
+
+function esTelefonoValido(telefono) {
+  return /^[6789]\d{8}$/.test(telefono.replace(/\s/g, ""));
 }
 
 // --- CONTROLADOR DEL FORMULARIO (CREATE / UPDATE) ---
 
-document.getElementById("formCitas").addEventListener("submit", function (e) {
-  e.preventDefault(); // Evitamos que la página se recargue
+document
+  .getElementById("formCitas")
+  .addEventListener("submit", function (event) {
+    // Detener el envío automático
+    event.preventDefault();
+    event.stopPropagation();
 
-  const idCita = document.getElementById("idCita").value;
-  const telefono = document.getElementById("telefono").value;
-  const errorDiv = document.getElementById("mensajeError");
-  const textoError = document.getElementById("textoError");
+    const form = this; // El formulario
+    const dniInput = document.getElementById("dni");
+    const telInput = document.getElementById("telefono");
+    const errorDniDiv = document.getElementById("errorDni");
+    const errorTelDiv = document.getElementById("errorTelefono");
 
-  // VALIDACIÓN
-  // Reiniciamos errores
-  errorDiv.classList.add("d-none");
+    // RESETEAR VALIDACIONES PERSONALIZADAS
+    // Quitamos 'is-invalid' manuales para volver a comprobar
+    dniInput.setCustomValidity("");
+    telInput.setCustomValidity("");
 
-  // Expresión regular para validar teléfono a 9 números
-  const telefonoRegex = /^[0-9]{9}$/;
+    // VALIDACIÓN PERSONALIZADA: DNI
+    if (dniInput.value.trim() !== "") {
+      if (!esDniValido(dniInput.value)) {
+        // Truco: setCustomValidity marca el campo como inválido para Bootstrap
+        dniInput.setCustomValidity("DNI Incorrecto");
+        errorDniDiv.textContent =
+          "El formato o la letra del DNI/NIE no son correctos.";
+      } else {
+        dniInput.setCustomValidity(""); // Es válido
+      }
+    } else {
+      errorDniDiv.textContent = "El DNI es obligatorio.";
+    }
 
-  if (!telefonoRegex.test(telefono)) {
-    textoError.innerText =
-      "Error: El teléfono debe contener exactamente 9 números.";
-    errorDiv.classList.remove("d-none");
-    return; // Detenemos la función (no se guarda nada)
-  }
+    // VALIDACIÓN PERSONALIZADA: TELÉFONO
+    if (telInput.value.trim() !== "") {
+      if (!esTelefonoValido(telInput.value)) {
+        telInput.setCustomValidity("Teléfono Incorrecto");
+        errorTelDiv.textContent =
+          "Debe ser un móvil o fijo válido (9 dígitos).";
+      } else {
+        telInput.setCustomValidity("");
+      }
+    } else {
+      errorTelDiv.textContent = "El teléfono es obligatorio.";
+    }
 
-  // RECOGIDA DE DATOS
-  let citas = obtenerCitas(); // Leemos las citas ANTES de crear la nueva
-  let nuevoNumero;
+    // COMPROBACIÓN FINAL DE BOOTSTRAP
+    if (!form.checkValidity()) {
+      // Si algo falla (required o nuestros customValidity), mostramos colores
+      form.classList.add("was-validated");
+      return; // PARAMOS AQUÍ
+    }
 
-  if (idCita) {
-    // Si editamos, mantenemos el número que ya tenía
-    const citaExistente = citas.find((c) => c.id == idCita);
-    nuevoNumero = citaExistente ? citaExistente.numero : 1;
-  } else {
-    // Si es nueva, calculamos el siguiente número (max + 1)
-    // Si no hay citas, empezamos en 1
-    const maxNumero =
-      citas.length > 0 ? Math.max(...citas.map((c) => c.numero || 0)) : 0;
-    nuevoNumero = maxNumero + 1;
-  }
+    // --- SI LLEGAMOS AQUÍ, TODO ESTÁ OK ---
 
-  const nuevaCita = new Cita(
-    idCita ? parseInt(idCita) : Date.now(),
-    document.getElementById("fecha").value,
-    document.getElementById("hora").value,
-    document.getElementById("nombre").value,
-    document.getElementById("apellidos").value,
-    document.getElementById("dni").value,
-    telefono,
-    document.getElementById("fechaNacimiento").value,
-    document.getElementById("observaciones").value,
-    nuevoNumero // <--- Pasamos el número calculado
-  );
-
-  // LÓGICA DE NEGOCIO (Insertar o Actualizar)
-  if (idCita) {
-    const index = citas.findIndex((c) => c.id == idCita);
-    if (index !== -1) citas[index] = nuevaCita;
-  } else {
-    citas.push(nuevaCita);
-  }
-
-  // PERSISTENCIA Y REFRESCO
-  guardarCitasEnStorage(citas); // Guardar en LocalStorage
-  renderizarTabla(); // Repintar la tabla
-  limpiarFormulario(); // Dejar el form listo para la siguiente
-});
+    // Guardado de datos (Tu lógica de siempre)
+    guardarDatosCita();
+  });
 
 // --- ACCIONES DE TABLA (BORRAR / EDITAR) ---
 
@@ -262,6 +274,45 @@ window.eliminarCita = function (id) {
     }
   }
 };
+
+function guardarDatosCita() {
+  const idCita = document.getElementById("idCita").value;
+  const citas = obtenerCitas();
+  let nuevoNumero;
+
+  if (idCita) {
+    const citaExistente = citas.find((c) => c.id == idCita);
+    nuevoNumero = citaExistente ? citaExistente.numero : 1;
+  } else {
+    const maxNumero =
+      citas.length > 0 ? Math.max(...citas.map((c) => c.numero || 0)) : 0;
+    nuevoNumero = maxNumero + 1;
+  }
+
+  const nuevaCita = new Cita(
+    idCita ? parseInt(idCita) : Date.now(),
+    document.getElementById("fecha").value,
+    document.getElementById("hora").value,
+    document.getElementById("nombre").value.trim(),
+    document.getElementById("apellidos").value.trim(),
+    document.getElementById("dni").value.toUpperCase().trim(),
+    document.getElementById("telefono").value.trim(),
+    document.getElementById("fechaNacimiento").value,
+    document.getElementById("observaciones").value.trim(),
+    nuevoNumero
+  );
+
+  if (idCita) {
+    const index = citas.findIndex((c) => c.id == idCita);
+    if (index !== -1) citas[index] = nuevaCita;
+  } else {
+    citas.push(nuevaCita);
+  }
+
+  guardarCitasEnStorage(citas);
+  renderizarTabla();
+  limpiarFormulario(); // Importante llamar a la nueva versión de abajo
+}
 
 // --- ORDENACIÓN POR FECHA ---
 window.ordenarPorFecha = function () {
@@ -343,6 +394,65 @@ window.verObservaciones = function (id) {
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
   }
+};
+
+// --- FUNCIÓN DE EXPORTACIÓN A CSV (EXCEL) ---
+window.exportarCitasCSV = function () {
+  const citas = obtenerCitas();
+
+  if (citas.length === 0) {
+    alert("No hay citas para exportar.");
+    return;
+  }
+
+  // Definir las cabeceras del archivo
+  // Usamos punto y coma (;) como separador porque Excel en español lo prefiere a la coma
+  let csvContent =
+    "ID;Número;Fecha;Hora;Nombre;Apellidos;DNI;Teléfono;Nacimiento;Observaciones\n";
+
+  // Recorrer las citas y convertir cada una a una línea de texto
+  citas.forEach((cita) => {
+    // Limpiamos los saltos de línea en observaciones para no romper el CSV
+    const observacionesLimpias = cita.observaciones.replace(
+      /(\r\n|\n|\r)/gm,
+      " "
+    );
+
+    const fila = [
+      cita.id,
+      cita.numero || "-",
+      cita.fecha,
+      cita.hora,
+      cita.nombre,
+      cita.apellidos,
+      cita.dni,
+      cita.telefono,
+      cita.fechaNacimiento,
+      `"${observacionesLimpias}"`, // Comillas para proteger el texto
+    ].join(";"); // Unimos con punto y coma
+
+    csvContent += fila + "\n";
+  });
+
+  // Crear el archivo Blob
+  // \uFEFF es el BOM (Byte Order Mark) para que Excel sepa que es UTF-8 (Tildes/Ñ)
+  const blob = new Blob(["\uFEFF" + csvContent], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  // Generar enlace de descarga invisible
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  // Generamos nombre con fecha: citas_davante_2026-01-03.csv
+  const fechaHoy = new Date().toISOString().split("T")[0];
+  link.setAttribute("href", url);
+  link.setAttribute("download", `citas_davante_${fechaHoy}.csv`);
+
+  // Simular clic y limpiar
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 // Al cargar el DOM: Renderiza la tabla
