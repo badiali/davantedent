@@ -224,6 +224,44 @@
         </p>
       </div>
     </footer>
+    <div
+      class="modal fade"
+      id="modalObservaciones"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-light">
+            <h5
+              class="modal-title"
+              style="color: var(--davante-blue)"
+              id="modalTitulo"
+            >
+              <i class="bi bi-file-text me-2"></i>Observaciones
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-4">
+            <p id="modalTexto" class="mb-0" style="white-space: pre-line"></p>
+          </div>
+          <div class="modal-footer border-top-0">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app.js"></script>
   </body>

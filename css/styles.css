@@ -121,6 +121,7 @@ body {
   font-size: 0.85rem;
   letter-spacing: 0.5px;
   border-bottom: 2px solid #e9ecef;
+  white-space: nowrap;
 }
 .table tbody tr:hover {
   background-color: rgba(0, 51, 160, 0.02);
@@ -138,6 +139,7 @@ body {
 }
 .col-orden {
   width: 5%;
+  min-width: 60px;
   text-align: center;
   color: var(--davante-blue);
   cursor: pointer;
@@ -147,6 +149,7 @@ body {
 }
 .col-fecha {
   width: 15%;
+  min-width: 140px;
   color: var(--davante-blue);
   cursor: pointer;
 }
@@ -155,15 +158,29 @@ body {
 }
 .col-paciente {
   width: 25%;
+  min-width: 150px;
 }
 .col-contacto {
   width: 20%;
+  min-width: 120px;
 }
 .col-observaciones {
   width: 20%;
+  min-width: 150px;
+  max-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.col-observaciones:hover {
+  background-color: rgba(0, 51, 160, 0.05);
+  color: var(--davante-blue);
 }
 .col-acciones {
   width: 15%;
+  min-width: 100px;
 }
 
 /* --- 8. FOOTER --- */

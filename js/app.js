@@ -82,23 +82,42 @@ function renderizarTabla(listaCitas = null) {
             <td class="fw-bold text-center text-muted">${numeroVisual}</td>
             <td>
                 <div class="fw-bold">${cita.fecha}</div>
-                <div class="small text-muted"><i class="bi bi-stopwatch"></i> ${cita.hora}</div>
+                <div class="small text-muted"><i class="bi bi-stopwatch"></i> ${
+                  cita.hora
+                }</div>
             </td>
             <td>
-                <div class="fw-bold text-dark">${cita.nombre} ${cita.apellidos}</div>
-                <div class="small text-muted"><i class="bi bi-person-badge"></i> ${cita.dni}</div>
+                <div class="fw-bold text-dark">${cita.nombre} ${
+      cita.apellidos
+    }</div>
+                <div class="small text-muted"><i class="bi bi-person-badge"></i> ${
+                  cita.dni
+                }</div>
             </td>
             <td>
-                <a href="tel:${cita.telefono}" class="text-decoration-none text-secondary">
+                <a href="tel:${
+                  cita.telefono
+                }" class="text-decoration-none text-secondary">
                     <i class="bi bi-telephone"></i> ${cita.telefono}
                 </a>
             </td>
-            <td><small class="text-truncate d-inline-block" style="max-width: 150px;">${cita.observaciones}</small></td>
+            <td class="col-observaciones" onclick="verObservaciones(${
+              cita.id
+            })" title="Click para ver completo">
+                ${
+                  cita.observaciones ||
+                  '<span class="text-muted fst-italic">Sin observaciones</span>'
+                }
+            </td>
             <td class="text-end">
-                <button class="btn btn-sm btn-primary me-1" onclick="cargarCita(${cita.id})" title="Editar">
+                <button class="btn btn-sm btn-primary me-1" onclick="cargarCita(${
+                  cita.id
+                })" title="Editar">
                     <i class="bi bi-pencil-square"></i>
                 </button>
-                <button class="btn btn-sm btn-secondary" onclick="eliminarCita(${cita.id})" title="Borrar">
+                <button class="btn btn-sm btn-secondary" onclick="eliminarCita(${
+                  cita.id
+                })" title="Borrar">
                     <i class="bi bi-trash3-fill"></i>
                 </button>
             </td>
@@ -304,6 +323,27 @@ function actualizarIconosOrden(tipo) {
     iconoFecha.className = "bi bi-filter text-muted";
   }
 }
+
+// --- FUNCIÓN PARA VER OBSERVACIONES EN MODAL ---
+window.verObservaciones = function (id) {
+  const citas = obtenerCitas();
+  const cita = citas.find((c) => c.id == id);
+  if (cita) {
+    // Rellenamos el título con el nombre del paciente
+    document.getElementById("modalTitulo").innerHTML = `
+            <i class="bi bi-file-text me-2"></i><strong>${cita.nombre} ${cita.apellidos}</strong>
+        `;
+    // Rellenamos el cuerpo. Si está vacío, ponemos un mensaje por defecto.
+    const texto = cita.observaciones
+      ? cita.observaciones
+      : "No hay observaciones registradas para este paciente.";
+    document.getElementById("modalTexto").innerText = texto;
+    // Abrimos el modal usando la API de Bootstrap 5
+    const modalElement = document.getElementById("modalObservaciones");
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+};
 
 // Al cargar el DOM: Renderiza la tabla
 document.addEventListener("DOMContentLoaded", () => {
