@@ -195,3 +195,11 @@ footer i {
   font-size: 1rem;
   vertical-align: -1px;
 }
+
+/* --- MODAL --- */
+.modalTexto {
+  color: var(--davante-blue);
+}
+.modal-body {
+  white-space: pre-line;
+}
