@@ -29,7 +29,7 @@ body {
   margin-bottom: var(--bs-gutter-y);
 }
 
-/* --- CABECERA / NAVBAR --- */
+/* --- HEADER --- */
 .navbar {
   background-color: var(--davante-blue) !important;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
